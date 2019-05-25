@@ -56,7 +56,7 @@ public class Main {
 	static int increment = 1;//システム負荷をいくつ先まであげてくかincremet*2ごと
 	static int taskLoad = 25;//システム負荷
 	static int strategy = HRF;
-	static int method =SRNF;
+	static int method =CPLEX;
 	static int Output = little;
 
 	public static void main(String[] args) {
