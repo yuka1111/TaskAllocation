@@ -382,7 +382,7 @@ public class Main {
 									value += busyAgent.get(i).getBid().value();
 									processTime += busyAgent.get(i).getBid().processTime();
 									duration += busyAgent.get(i).getBid().duration();
-									System.out.println("sum "+sum);
+//									System.out.println("sum "+sum);
 
 									//Agent学習
 									if (strategy == ELEARN || strategy == RLEARN) {
@@ -415,7 +415,7 @@ public class Main {
 								KEEP.remove(KEEP.size() - 1);
 							other.calculate(KEEP);
 							for (Bid b : allocation) {
-								System.out.println("aaa");
+//								System.out.println("aaa");
 
 								//bias変化があるとき？
 								if (strategy == ELEARN) {
@@ -429,7 +429,7 @@ public class Main {
 									b.agent().reward(b.value());
 								b.agent().addBid(b);
 								agent[b.agentNumber()].busy(b.processTime());
-								System.out.println("aaa");
+//								System.out.println("aaa");
 								busyAgent.add(b.agent());
 							}
 							//値の保存
