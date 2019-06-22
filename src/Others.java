@@ -38,6 +38,7 @@ public class Others {
 	double matchStd;
 	double deadlineStd;
 
+	//存在比
 	public double[] bias(int number){
 		double[] bias = new double[4];
 		switch (number){
@@ -222,6 +223,7 @@ public class Others {
 		}
 		return result;
 	}
+	//ポワソン分布
 	public int poisson(int lambda, Random random){
 		double xp;
 		int k = 0;

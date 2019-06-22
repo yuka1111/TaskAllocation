@@ -17,6 +17,7 @@ public class Learning {
 	double slesh = 0.5;
 
 	int howmany = 4;
+	final static int MANAGER = Main.MANAGER;
 
 	public void update(Agent age, double reward) {
 		age.strategy_qvalue[age.agentStrategy()] = (1 - rate) * age.strategy_qvalue[age.agentStrategy()] + rate * reward;
@@ -24,6 +25,19 @@ public class Learning {
 
 	public void update(Agent age, double reward, double agentReward) {
 		age.strategy_qvalue[age.agentStrategy()] = (1 - rate) * age.strategy_qvalue[age.agentStrategy()] + rate * (reward + agentReward);
+	}
+
+	public void manager_update(Agent age, double reward) {
+		age.manager_qvalue[age.managerNumber] = (1 - rate) * age.strategy_qvalue[age.managerNumber] + rate * reward;
+	}
+
+	public int manager_greedy(Agent age, Random random) {
+		int num = 0;
+		if(random.nextDouble() <  epsilon)
+			num = age.managerNumber(random.nextInt(MANAGER));
+		else
+			num = age.managerNumber(number(age.manager_qvalue, random));
+		return num;
 	}
 
 	public int greedy(Agent age, Random random) {
@@ -87,6 +101,7 @@ public class Learning {
 	}
 
 	public int number(double[] a, Random random) {
+		//一番大きいQ値を出す、等しい場合はランダム
 		double c = a[0];
 		ArrayList<Integer> s = new ArrayList<Integer>();
 		s.add(0);
