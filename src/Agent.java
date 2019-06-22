@@ -2,6 +2,7 @@
 import java.util.Random;
 
 public class Agent {
+	int managerNumber;
 	int agentNumber;
 	int agentResource[] = new int[3];
 	int agentStrategy;
@@ -16,10 +17,11 @@ public class Agent {
 	double utility;
 	double stdUtility;
 	int[] utilityValue = new int[20];
-	int status;//なに,busyで値をつっこんでるっぽ
+	int status;//busyAgentかいなか
 	Bid bid;
 
-	public Agent(int agentNum, int[] agentRec, Random random) {
+	public Agent(int managerNum, int agentNum, int[] agentRec, Random random) {
+		this.managerNumber = managerNum;
 		this.agentNumber = agentNum;
 		this.agentResource = agentRec;
 		if (strategy < 4)
@@ -86,6 +88,7 @@ public class Agent {
 	public boolean elapsedTime() {
 		this.status--;
 		if(status < 0){
+			System.out.println("manager"+this.managerNumber);
 			System.out.println("yabai" + agentNumber);
 			System.exit(1);
 		}
@@ -112,5 +115,10 @@ public class Agent {
 
 	public String Qvalue() {
 		return this.strategy_qvalue[0]+ "," + this.strategy_qvalue[1] + "," + this.strategy_qvalue[2] + "," + this.strategy_qvalue[3];
+	}
+
+	public int managerNumber(int n) {
+		this.managerNumber = n;
+		return n;
 	}
 }

@@ -25,28 +25,30 @@ public class MakeObject {
 	final static int bidNumber = Main.bidNumber;
 	static int Value = Main.Value;
 
-	public void makeBid(Agent[] agent, ArrayList<Task> task, ArrayList<ArrayList<Bid>> bid,
+	//エージェントの戦略ごとに希望リストを作る
+	public void makeBid(ArrayList<Agent> agents, ArrayList<Task> task, ArrayList<ArrayList<Bid>> bid,
 			ArrayList<ArrayList<Bid>> agentBid, Random random) {
-		for (int i = 0; i < agent.length; i++) {
-			if (agent[i].status > 0)
+		for (int i = 0; i < agents.size(); i++) {
+			//busyはスルー
+			if (agents.get(i).status > 0)
 				continue;
+			//順位リスト
 			int value[] = new int[bidNumber];
 			int count = 0;
 			ArrayList<Bid> forA = new ArrayList<Bid>();
-			switch (agent[i].agentStrategy()) {
+			switch (agents.get(i).agentStrategy()) {
 			case EDF:
 				for (int v = 0; v < value.length; v++) {
 					value[v] = 100;
 				}
 				for (Task t : task) {
-					int maxmin[] = calculate(agent[i].resource(), t.resource());
+					int maxmin[] = calculate(agents.get(i).resource(), t.resource());
 					int reward;
-					if(t.flag == 1) {
+					if (t.flag == 1) {
 						reward = (int) (t.reward()
-						* (t.deadline() - maxmin[0])
-						/ (t.original_deadline));
-					}
-					else
+								* (t.deadline() - maxmin[0])
+								/ (t.original_deadline));
+					} else
 						reward = t.reward;
 					if (maxmin[0] > t.deadline())
 						continue;
@@ -57,7 +59,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j - 1] = t.deadline();
-								forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
 								break;
@@ -73,7 +75,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = t.deadline();
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -81,11 +83,11 @@ public class MakeObject {
 									} else if (reward == forA.get(bidNumber - j - 1).value()) {
 										if (random.nextDouble() < 0.5) {
 											if (j == value.length - 1) {
-				 								for (int k = 0; k < 4; k++) {
+												for (int k = 0; k < 4; k++) {
 													value[k] = value[k + 1];
 												}
 												value[j] = t.deadline();
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -96,7 +98,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = t.deadline();
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -106,7 +108,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = t.deadline();
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -121,7 +123,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = t.deadline();
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -133,7 +135,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = t.deadline();
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -144,7 +146,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = t.deadline();
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -154,7 +156,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = t.deadline();
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -167,7 +169,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j] = t.deadline();
-								forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
@@ -194,14 +196,13 @@ public class MakeObject {
 					value[v] = 0;
 				}
 				for (Task t : task) {
-					int maxmin[] = calculate(agent[i].resource(), t.resource());
+					int maxmin[] = calculate(agents.get(i).resource(), t.resource());
 					int reward;
-					if(t.flag == 1) {
+					if (t.flag == 1) {
 						reward = (int) (t.reward() / 2 + t.reward()
-						* (t.deadline() - maxmin[0])
-						/ (2 * t.original_deadline));
-					}
-					else
+								* (t.deadline() - maxmin[0])
+								/ (2 * t.original_deadline));
+					} else
 						reward = t.reward;
 					if (maxmin[0] > t.deadline())
 						continue;
@@ -214,7 +215,7 @@ public class MakeObject {
 								}
 								value[j - 1] = reward;
 
-								forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
@@ -231,7 +232,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = reward;
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -243,7 +244,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = reward;
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -254,7 +255,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = reward;
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -264,7 +265,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = reward;
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -279,7 +280,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = reward;
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -291,7 +292,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = reward;
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -302,7 +303,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = reward;
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -312,7 +313,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = reward;
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -325,7 +326,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j] = reward;
-								forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
@@ -352,14 +353,13 @@ public class MakeObject {
 					value[v] = -100;
 				}
 				for (Task t : task) {
-					int maxmin[] = calculate(agent[i].resource(), t.resource());
+					int maxmin[] = calculate(agents.get(i).resource(), t.resource());
 					int reward;
-					if(t.flag == 1) {
+					if (t.flag == 1) {
 						reward = (int) (t.reward() / 2 + t.reward()
-						* (t.deadline() - maxmin[0])
-						/ (2 * t.original_deadline));
-					}
-					else
+								* (t.deadline() - maxmin[0])
+								/ (2 * t.original_deadline));
+					} else
 						reward = t.reward;
 					if (maxmin[0] > t.deadline())
 						continue;
@@ -370,7 +370,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j - 1] = -maxmin[0];
-								forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
 								break;
@@ -386,7 +386,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = -maxmin[0];
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -398,7 +398,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = -maxmin[0];
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -409,7 +409,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = -maxmin[0];
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -419,7 +419,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = -maxmin[0];
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -434,7 +434,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = -maxmin[0];
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -446,7 +446,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = -maxmin[0];
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -457,7 +457,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = -maxmin[0];
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -467,7 +467,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = -maxmin[0];
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -480,7 +480,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j] = -maxmin[0];
-								forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
@@ -507,14 +507,13 @@ public class MakeObject {
 					value[v] = 0;
 				}
 				for (Task t : task) {
-					int maxmin[] = calculate(agent[i].resource(), t.resource());
+					int maxmin[] = calculate(agents.get(i).resource(), t.resource());
 					int reward;
-					if(t.flag == 1) {
+					if (t.flag == 1) {
 						reward = (int) (t.reward() / 2 + t.reward()
-						* (t.deadline() - maxmin[0])
-						/ (2 * t.original_deadline));
-					}
-					else
+								* (t.deadline() - maxmin[0])
+								/ (2 * t.original_deadline));
+					} else
 						reward = t.reward;
 					if (maxmin[0] > t.deadline())
 						continue;
@@ -525,7 +524,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j - 1] = reward / maxmin[0];
-								forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
 								break;
@@ -541,7 +540,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = reward / maxmin[0];
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -553,7 +552,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = reward / maxmin[0];
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -564,7 +563,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = reward / maxmin[0];
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -574,7 +573,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = reward / maxmin[0];
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -589,7 +588,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j] = reward / maxmin[0];
-											forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
@@ -601,7 +600,7 @@ public class MakeObject {
 													value[k] = value[k + 1];
 												}
 												value[j] = reward / maxmin[0];
-												forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+												forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 												if (forA.size() > bidNumber)
 													forA.remove(forA.size() - 1);
@@ -612,7 +611,7 @@ public class MakeObject {
 												value[k] = value[k + 1];
 											}
 											value[j - 1] = reward / maxmin[0];
-											forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+											forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 											if (forA.size() > bidNumber)
 												forA.remove(forA.size() - 1);
 											break;
@@ -622,7 +621,7 @@ public class MakeObject {
 											value[k] = value[k + 1];
 										}
 										value[j - 1] = reward / maxmin[0];
-										forA.add(bidNumber - j, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+										forA.add(bidNumber - j, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 										if (forA.size() > bidNumber)
 											forA.remove(forA.size() - 1);
 										break;
@@ -635,7 +634,7 @@ public class MakeObject {
 									value[k] = value[k + 1];
 								}
 								value[j] = reward / maxmin[0];
-								forA.add(0, new Bid(t, agent[i], reward, 1, 1, maxmin[0]));
+								forA.add(0, new Bid(t, agents.get(i), reward, 1, 1, maxmin[0]));
 
 								if (forA.size() > bidNumber)
 									forA.remove(forA.size() - 1);
@@ -660,7 +659,9 @@ public class MakeObject {
 				break;
 			}
 			if (forA.isEmpty() != true) {
+				//エージェントごとの希望リスト追加
 				agentBid.add(forA);
+				//タスクごとの希望リスト追加
 				for (int j = 0; j < forA.size(); j++) {
 					bid.get(forA.get(j).taskNumber()).add(forA.get(j));
 				}
@@ -693,38 +694,38 @@ public class MakeObject {
 		}
 	}
 
-	public void makeAgent(Agent[] agent, int n, Random random) {
+	public void makeAgent(int ManagerNum,ArrayList<Agent> agents, int n, Random random, int number, int other) {
 		switch (n) {
 		case RANDOM:
-			for (int i = 0; i < agent.length; i++) {
-				agent[i] = new Agent(i, randomAgent(LENGTH, random), random);
+			for (int i = 0; i < number; i++) {
+				agents.add(new Agent(ManagerNum, other+i, randomAgent(LENGTH, random), random));
 			}
 			break;
 		case BIAS:
-			for (int i = 0; i < agent.length / 4; i++) {
-				agent[i] = new Agent(i, highAgent(LENGTH, random), random);
+			for (int i = 0; i < number / 4; i++) {
+				agents.add(new Agent(ManagerNum, other+i, highAgent(LENGTH, random), random));
 			}
-			for (int i = agent.length / 4; i < agent.length; i++) {
-				agent[i] = new Agent(i, biasAgent(LENGTH, random, random.nextInt(LENGTH)), random);
+			for (int i = number / 4; i < number; i++) {
+				agents.add(new Agent(ManagerNum, other+i, biasAgent(LENGTH, random, random.nextInt(LENGTH)), random));
 			}
 			break;
 		case MIXED:
-			for (int i = 0; i < agent.length / 4; i++) {
-				agent[i] = new Agent(i, highAgent(LENGTH, random), random);
+			for (int i = 0; i < number / 4; i++) {
+				agents.add(new Agent(ManagerNum, other+i, highAgent(LENGTH, random), random));
 			}
-			for (int i = agent.length / 4; i < agent.length / 2; i++) {
-				agent[i] = new Agent(i, lowAgent(LENGTH, random), random);
+			for (int i = number / 4; i < number / 2; i++) {
+				agents.add(new Agent(ManagerNum, other+i, lowAgent(LENGTH, random), random));
 			}
-			for (int i = agent.length / 2; i < agent.length; i++) {
-				agent[i] = new Agent(i, biasAgent(LENGTH, random, random.nextInt(LENGTH)), random);
+			for (int i = number / 2; i < number; i++) {
+				agents.add(new Agent(ManagerNum, other+i, biasAgent(LENGTH, random, random.nextInt(LENGTH)), random));
 			}
 			break;
 		case GOODBAD:
-			for (int i = 0; i < agent.length / 2; i++) {
-				agent[i] = new Agent(i, lowAgent(LENGTH, random), random);
+			for (int i = 0; i < number / 2; i++) {
+				agents.add(new Agent(ManagerNum, other+i, lowAgent(LENGTH, random), random));
 			}
-			for (int i = agent.length / 2; i < agent.length; i++) {
-				agent[i] = new Agent(i, highAgent(LENGTH, random), random);
+			for (int i = number / 2; i < number; i++) {
+				agents.add(new Agent(ManagerNum, other+i, highAgent(LENGTH, random), random));
 			}
 			break;
 		default:
@@ -790,10 +791,10 @@ public class MakeObject {
 	public int[] calculate(int[] agent, int[] task) {
 		int[] maxmin = { (int) Math.ceil(task[0] / agent[0]), (int) Math.ceil(task[0] / agent[0]) };
 		for (int i = 1; i < LENGTH; i++) {
-			if (maxmin[0] < (int) Math.ceil((double)task[i] / agent[i]))
-				maxmin[0] = (int) Math.ceil((double)task[i] / agent[i]);
-			if (maxmin[1] > (int) Math.ceil((double)task[i] / agent[i]))
-				maxmin[1] = (int) Math.ceil((double)task[i] / agent[i]);
+			if (maxmin[0] < (int) Math.ceil((double) task[i] / agent[i]))
+				maxmin[0] = (int) Math.ceil((double) task[i] / agent[i]);
+			if (maxmin[1] > (int) Math.ceil((double) task[i] / agent[i]))
+				maxmin[1] = (int) Math.ceil((double) task[i] / agent[i]);
 		}
 		return maxmin;
 	}
