@@ -83,6 +83,7 @@ public class Agent {
 
 	public void busy(int n) {
 		this.status = n;
+//		if(agentNumber == 239) System.out.println("manager"+this.managerNumber+":allocated:"+this.status);
 	}
 
 	public boolean elapsedTime() {

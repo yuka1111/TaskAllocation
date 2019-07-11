@@ -156,7 +156,7 @@ public class Manager {
 				//タスク削除
 				delete.DeleteTask(bid, task1, item);
 			}
-			System.out.println(allocation.size());
+//			System.out.println(allocation.size());
 
 			//step5 後処理
 			for (int i = 0; i < task1.size(); i++) {
@@ -216,12 +216,13 @@ public class Manager {
 		end = System.nanoTime();
 		//割り当て時間
 		calcTime = end - start;
-		System.out.println(calcTime);
+//		System.out.println(calcTime);
 
 		//deadline をすぎたタスクを廃棄タスクに
 		for (int i = 0; i < task1.size(); i++) {
 			if (task1.get(i).elapsedTime()) {
 				drop++;
+//				System.out.println(drop);
 				task1.remove(i);
 				i--;
 			}
@@ -270,6 +271,11 @@ public class Manager {
 		while (KEEP.size() > 51)//51ってなに??
 			KEEP.remove(KEEP.size() - 1);
 		other.calculate(KEEP);
+//割り当て確認
+//		for (Bid b : allocation) {
+//			System.out.print(b.agentNumber()+",");
+//		}
+//		System.out.println();
 
 		for (Bid b : allocation) {
 			//bias変化があるとき？
@@ -286,8 +292,9 @@ public class Manager {
 			//busyAgentに追加
 			b.agent().addBid(b);
 			for (Agent agent :agents)
-				if(b.agentNumber() ==agent.agentNumber())
-					agent.busy(b.processTime());
+				if(b.agentNumber() ==agent.agentNumber()) {
+					agent.busy(b.processTime());//必要時間をつっこむ
+				}
 //			System.out.println("aaa");
 			busyAgent.add(b.agent());
 		}
@@ -330,4 +337,11 @@ public class Manager {
 		}
 
 		}
+
+	public double get_drop_sum() {
+		return drop;
+	}
 }
+
+
+
