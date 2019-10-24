@@ -12,7 +12,7 @@ public class Learning {
 	final static int LANDOM = Main.LANDOM;
 
 	double rate = 0.1;
-	double epsilon = 0.1;
+	double epsilon = 0.1;//0.05か0.01でいいかも
 	double t = 50;
 	double slesh = 0.5;
 

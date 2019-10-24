@@ -35,7 +35,7 @@ public class Main {
 	final static int SRNF = 1;
 	//Agent数とbias用のリソースサイズ？
 	final static int LENGTH = 3;
-	final static int AGENT = 150;
+	final static int AGENT = 300;
 	//deadlineについて
 	final static int deadlineUnder = 15;
 	final static int deadlineRange = 10;
@@ -52,15 +52,17 @@ public class Main {
 
 	static int Switch = OFF;
 	static int penalty = -5;
-	static int SIMULATIONTIME = 10010;
+	static int SIMULATIONTIME = 16000;
 	static int Value = REWARD;
 	static int bidNumber = 5;//希望順位リストのサイズ
 	static int agentType = GOODBAD;
 	static int taskReward = TASK_REWARD;
 	static int Loop = 3;//Loop回数
 	static int increment = 1;//システム負荷をいくつ先まであげてくかincremet*2ごと
-	static int taskLoad = 17;//システム負荷
-	static int taskload2 = 1;
+	static int taskLoad = 18;//システム負荷
+	static int taskLoad2 = 0;
+	static int tpt = 9;//1ticのタスク発生数
+	static int tpt2 = 9;//task_per_num
 	static int strategy = RLEARN;
 	static int method =SRNF;
 	static int Output = little;
@@ -92,8 +94,10 @@ public class Main {
 		//大きいループ
 		for (int numbers = 0; numbers < 1; numbers++) {
 			//次に大きいループ
-			for (int bias = 0; bias < 2; bias++) {
+			for (int bias = 0; bias < 1; bias++) {
 				//0:normal, 1:mix
+				int bias0 =1;
+				int bias1 =1;
 //				if (bias == 1)
 //					taskLoad = 20;
 
@@ -119,8 +123,9 @@ public class Main {
 //				break;
 //			}
 
-				//prob(<-bias)はノーマル環境か混合環境かってとこっぽ
-				double[] prob = other.bias(bias);
+				//prob(<-bias)はノーマル環境(0:bias)か混合環境(1:bias)か
+				double[] prob0 = other.bias(bias0);
+				double[] prob1 = other.bias(bias1);
 
 				double[] IncSum = new double[increment];
 				double[] IncValue = new double[increment];
@@ -146,7 +151,6 @@ public class Main {
 
 				for (int inc =0; inc < increment; inc++) {
 					//システム負荷を２ずつ増加
-					int taskload = taskLoad + inc *2;
 					double[] loopSum = new double[SIMULATIONTIME];
 					double[] loopValue = new double[SIMULATIONTIME];
 					double[] loopDrop = new double[SIMULATIONTIME];
@@ -157,6 +161,12 @@ public class Main {
 					double[][] loopCalcTime = new double[SIMULATIONTIME][2];
 
 					for(int loop = 0;loop < Loop; loop++) {
+						int taskload = taskLoad;
+						int taskload2 = taskLoad2;
+
+						int task = tpt;
+						int task2 = tpt2;
+
 //						System.out.println(Task.slice+",");
 						ArrayList<Bid> KEEP = new ArrayList<Bid>();
 						double sum = 0;
@@ -197,18 +207,18 @@ public class Main {
 						//Agent生成
 						for( int i = 0; i < MANAGER; i++) {
 							if(i==0) {
-								object.makeAgent(i, agents, agentType, random, AGENT,0);
+								object.makeAgent(i, agents, agentType, random, AGENT/2,0);
 								managers.add(new Manager(i, agents));
 							}
 
 							if(i==1) {
-								object.makeAgent(i, agents1, agentType, random, AGENT,AGENT);
+								object.makeAgent(i, agents1, agentType, random, AGENT/2, AGENT/2);
 								managers.add(new Manager(i, agents1));
 							}
 
 							agentList.add(managers.get(i).agents);
 						}
-
+//agent確認の出力
 //						System.out.println(managers.get(0).agents.size()+":"+managers.get(1).agents.size());
 //						ArrayList<Agent> aaa = managers.get(0).agents;
 //						for(Agent a:aaa)
@@ -243,25 +253,38 @@ public class Main {
 
 						//シミュレーションタイム計測開始・実行ループ
 						while (time < SIMULATIONTIME) {
-//							System.out.println(managers.get(0).agents.size()+":"+managers.get(1).agents.size());
-//							ArrayList<Agent> aaa = managers.get(0).agents;
-//							for(Agent a:aaa)
-//								System.out.print(a.managerNumber);
-//							System.out.println();
-//							ArrayList<Agent> bbb = managers.get(1).agents;
-//							for(Agent a:bbb)
-//								System.out.print(a.managerNumber);
-//							System.out.println();
-
-
 							allStart = System.nanoTime();
+
 							//Task生成
-							for(int i = 0; i<MANAGER; i++) {
-								if(i==0)
-									managers.get(i).makeTask(taskload,random,prob);
-								else
-									managers.get(i).makeTask(taskload2,random,prob);
+							if(time==1000 || time==7500){
+								bias1+=1;
+								prob1 = other.bias(bias1);
+//								task= task-1;
+//								task2= task2+1;
 							}
+//							for(int i = 0; i<MANAGER; i++) {
+//								if(i==0)
+//									managers.get(i).makeTask(taskload,random,prob);
+//								else {
+//									managers.get(i).makeTask(taskload2,random,prob);
+//								}
+//							}
+							for(int i = 0; i<MANAGER; i++) {
+							if(i==0)
+								managers.get(i).makeTask_fixed(task,random,prob0);
+							else {
+								managers.get(i).makeTask_fixed(task2,random,prob1);
+							}
+						}
+//task確認の出力
+//							ArrayList<Task> aaa = managers.get(0).task1;
+//							for(Task t:aaa)
+//								System.out.print(t.taskNumber);
+//							System.out.println();
+//							ArrayList<Task> bbb = managers.get(1).task1;
+//							for(Task a:bbb)
+//								System.out.print(a.taskNumber);
+//							System.out.println();
 
 							//希望リストB作成
 							for(int i = 0; i<MANAGER; i++) {
@@ -282,7 +305,19 @@ public class Main {
 //							System.out.println(loop+","+time+","+managers.get(0).get_drop_sum());
 //							System.out.println(managers.get(1).get_drop_sum());
 
-							System.out.println("0,"+taskload+","+managers.get(0).agents.size()+","+managers.get(0).get_drop_sum()+", 1,"+taskload2+","+managers.get(1).agents.size()+","+managers.get(1).get_drop_sum());
+//							System.out.println("0,"+taskload+","+managers.get(0).agents.size()+","+managers.get(0).get_drop_sum()+","+managers.get(0).tpt
+//									+", 1,"+taskload2+","+managers.get(1).agents.size()+","+managers.get(1).get_drop_sum()+","+managers.get(1).tpt);
+
+							System.out.print(time+",0,"+task+","+managers.get(0).agents.size()+","+managers.get(0).get_drop_sum()
+									+", 1,"+task2+","+managers.get(1).agents.size()+","+managers.get(1).get_drop_sum()+",");
+
+							for(int i = 0; i<MANAGER; i++) {
+								int high, low;
+								high = managers.get(i).get_high_agent();
+								low = managers.get(i).agents.size()-high;
+								System.out.print(","+high+","+low);
+							}
+							System.out.println();
 
 							for(int i = 0; i<MANAGER; i++) {
 								managers.get(i).save();//drop etc 初期化
@@ -336,10 +371,6 @@ public class Main {
 									TASK.slice();
 									//		other.stdout();
 								}
-//							System.out.println(managers.get(0).get_drop_sum());
-
-//							System.out.println("0,"+taskload+","+managers.get(0).agents.size()+","+managers.get(0).get_drop_sum()+", 1,"+managers.get(1).agents.size()+","+managers.get(1).get_drop_sum());
-//							System.out.println(managers.get(0).agents.get(0).agentNumber+":"+managers.get(1).agents.get(0).agentNumber);
 
 //						if(time%1000 == 0)
 //							taskload += 1;

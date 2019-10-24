@@ -46,6 +46,7 @@ public class Manager {
 	double allEnd = 0;
 	double start = 0;
 	double end = 0;
+	int tpt = 0;//task_per_tic
 
 	CPLEX cplex = new CPLEX();
 	Allocate allocate = new Allocate();
@@ -58,7 +59,15 @@ public class Manager {
 	}
 
 	public void makeTask(int taskload, Random random, double[] prob) {
-		object.makeTask(task1, other.poisson(taskload, random), random, prob);
+		tpt = other.poisson(taskload, random);
+		object.makeTask(task1, tpt, random, prob);
+//		System.out.println(managerNumber+":task:"+tpt+":load:"+taskload);
+	}
+
+	public void makeTask_fixed(int task_num, Random random, double[] prob) {
+		tpt = task_num;
+		object.makeTask(task1, tpt, random, prob);
+//		System.out.println(managerNumber+":task:"+tpt);
 	}
 
 	public void makeBid(Random random) {
@@ -253,7 +262,15 @@ public class Manager {
 			}
 		}
 		//Agent学習のQ値を更新
-		if (strategy == ELEARN)
+		if (task1.size() == 0)
+			for(Agent agent : agents) {
+				learning.update(agent, 0);
+				learning.greedy(agent, random);
+				learning.manager_update(agent, 0);
+				learning.manager_greedy(agent, random);
+			}
+
+		else if (strategy == ELEARN)
 			for (ArrayList<Bid> b : agentBid) {
 				learning.update(b.get(0).agent(), penalty);
 				learning.greedy(b.get(0).agent(), random);
@@ -275,7 +292,7 @@ public class Manager {
 //		for (Bid b : allocation) {
 //			System.out.print(b.agentNumber()+",");
 //		}
-//		System.out.println();
+//		System.out.println("aaa"+managerNumber);
 
 		for (Bid b : allocation) {
 			//bias変化があるとき？
@@ -340,6 +357,16 @@ public class Manager {
 
 	public double get_drop_sum() {
 		return drop;
+	}
+
+	public int get_high_agent() {
+		int high =0;
+		for(Agent agent :agents)
+			if(agent.agentResource[0]>=5) {
+				high++;
+//				System.out.println(agent.agentResource[0]+","+ agent.agentResource[1]);
+			}
+		return high;
 	}
 }
 
