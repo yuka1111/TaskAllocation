@@ -8,7 +8,7 @@ public class Main {
 	final static int HRF = 1;
 	final static int SPTF = 2;
 	final static int CEF = 3;
-	final static int ELEARN = 4;//使うのか？
+	final static int ELEARN = 4;//使うのか?？
 	final static int RLEARN = 5;
 	final static int LANDOM = 6;
 
